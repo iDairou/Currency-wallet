@@ -1,76 +1,116 @@
-import React, { useState } from "react";
-import useLocalStorage from "../../hooks/useLocalStorage";
-import { useReducer, useDispatch } from "react";
+import React, { useEffect, useState } from "react";
+// import { useDispatch, useSelector } from "react-redux";
+// import { createActionAdd } from "../../reducers/currencyForm";
+import API from "../../API/apiProvider";
+import { fields } from "../../constants/formFields";
+import {
+	FormControl,
+	InputLabel,
+	Input,
+	Button,
+	Box,
+	TextField,
+	MenuItem,
+} from "@mui/material";
 
 const Form = () => {
-  const initState = {
-    currency: "USD",
-    quantity: 0,
-    date: "",
-    price: 0,
-  };
+	// const dispatch = useDispatch();
+	// const currencies = useSelector((state) => state.currencies);
+	const initState = {
+		currency: "",
+		quantity: "",
+		date: "",
+		price: "",
+	};
+	const [formState, setFormState] = useState(initState);
+	const [options, setOptions] = useState([]);
 
-  const [state, setState] = useState(initState);
-  const [data, setData] = useLocalStorage("currencies", []);
+	const api = new API();
+	const getSymbols = () => {
+		api
+			.getCurrencySymbols()
+			.then((resp) => {
+				return resp.symbols;
+			})
+			.then((resp) => {
+				setOptions(Object.keys(resp));
+			});
+	};
+	useEffect(() => {
+		getSymbols();
+		console.log(formState);
+	}, []);
 
-  const dispatch = useDispatch();
+	// const [state, setState] = useState(initState);
 
-  const handleChange = (e) => {
-    setState({
-      ...state,
-      [e.target.name]: e.target.value,
-    });
-  };
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setData([...data, state]);
-  };
+	const addItemHandler = (e) => {
+		e.preventDefault();
+		console.log("click");
+		console.log(formState, options);
+	};
 
-  const { quantity, date, price } = state;
+	const handleChange = (e) => {
+		setFormState({
+			...formState,
+			[e.target.name]: e.target.value,
+		});
+		console.log(formState);
+	};
 
-  return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Rodzaj waluty:
-        <select name="currency" onChange={(e) => handleChange(e)} id="currency">
-          <option>EUR</option>
-          <option>USD</option>
-          <option>GBP</option>
-        </select>
-      </label>
-      {console.log(state)}
-      <label>
-        Data zakupu:
-        <input
-          value={date}
-          name="date"
-          onChange={(e) => handleChange(e)}
-          type="date"
-        />
-      </label>
+	const { currency, quantity, date, price } = formState;
 
-      <label>
-        Ilość:
-        <input
-          onChange={(e) => handleChange(e)}
-          value={quantity}
-          name="quantity"
-          placeholder="Podaj ilość"
-          type="number"
-        />
-      </label>
-
-      <label>
-        Cena:
-        <input
-          name="price"
-          value={price}
-          onChange={(e) => handleChange(e)}
-          placeholder="Podaj cenę"
-        />
-      </label>
-      <button type="submit">Dodaj</button>
-    </form>
-  );
+	return (
+		<>
+			<h1>Form</h1>
+			<Box
+				component="form"
+				sx={{
+					display: "flex",
+					justifyContent: "space-around",
+					flexWrap: "wrap",
+				}}
+				noValidate
+				autoComplete="off"
+				onSubmit={addItemHandler}
+			>
+				{fields &&
+					fields.map((field) => {
+						return field.type !== "select" ? (
+							<div>
+								<InputLabel>{field.label}</InputLabel>
+								<Input
+									required
+									name={field.name}
+									value={formState[field.name]}
+									onChange={(e) => handleChange(e)}
+									type={field.type}
+								/>
+							</div>
+						) : (
+							<FormControl>
+								<TextField
+									id="outlined-select-currency"
+									select
+									label="Select"
+									helperText="Please select your currency"
+									onChange={(e) => handleChange(e)}
+									defaultValue="EUR"
+									name="currency"
+								>
+									{options.map((option) => {
+										return (
+											<MenuItem name={option} key={option} value={option}>
+												{option}
+											</MenuItem>
+										);
+									})}
+								</TextField>
+							</FormControl>
+						);
+					})}
+				<Button type="submit">ADD</Button>
+			</Box>
+		</>
+	);
 };
 export default Form;
