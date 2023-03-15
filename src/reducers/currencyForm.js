@@ -1,3 +1,5 @@
+
+
 export const ADD_ITEM = "ADD";
 
 const initialState = {
@@ -8,6 +10,8 @@ export const createActionAdd = (currencyData) => ({
 	type: ADD_ITEM,
 	payload: currencyData,
 });
+
+
 
 export const reducer = (state = initialState, action) => {
 	switch (action.type) {

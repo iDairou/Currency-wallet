@@ -14,8 +14,6 @@ import {
 } from "@mui/material";
 
 const Form = () => {
-	// const dispatch = useDispatch();
-	// const currencies = useSelector((state) => state.currencies);
 	const initState = {
 		currency: "",
 		quantity: "",
@@ -38,10 +36,7 @@ const Form = () => {
 	};
 	useEffect(() => {
 		getSymbols();
-		console.log(formState);
 	}, []);
-
-	// const [state, setState] = useState(initState);
 
 	const addItemHandler = (e) => {
 		e.preventDefault();
@@ -54,10 +49,7 @@ const Form = () => {
 			...formState,
 			[e.target.name]: e.target.value,
 		});
-		console.log(formState);
 	};
-
-	const { currency, quantity, date, price } = formState;
 
 	return (
 		<>
@@ -65,11 +57,13 @@ const Form = () => {
 			<Box
 				component="form"
 				sx={{
+					width: "80%",
+					margin: "0 auto",
 					display: "flex",
-					justifyContent: "space-around",
+					alignItems: "center",
+					justifyContent: "space-evenly",
 					flexWrap: "wrap",
 				}}
-				noValidate
 				autoComplete="off"
 				onSubmit={addItemHandler}
 			>
@@ -84,28 +78,27 @@ const Form = () => {
 									value={formState[field.name]}
 									onChange={(e) => handleChange(e)}
 									type={field.type}
+									helperText={field.error}
 								/>
 							</div>
 						) : (
-							<FormControl>
-								<TextField
-									id="outlined-select-currency"
-									select
-									label="Select"
-									helperText="Please select your currency"
-									onChange={(e) => handleChange(e)}
-									defaultValue="EUR"
-									name="currency"
-								>
-									{options.map((option) => {
-										return (
-											<MenuItem name={option} key={option} value={option}>
-												{option}
-											</MenuItem>
-										);
-									})}
-								</TextField>
-							</FormControl>
+							<TextField
+								id="outlined-select-currency"
+								select
+								label={field.label}
+								helperText="Please select your currency"
+								onChange={(e) => handleChange(e)}
+								defaultValue="EUR"
+								name="currency"
+							>
+								{options.map((option) => {
+									return (
+										<MenuItem name={option} key={option} value={option}>
+											{option}
+										</MenuItem>
+									);
+								})}
+							</TextField>
 						);
 					})}
 				<Button type="submit">ADD</Button>

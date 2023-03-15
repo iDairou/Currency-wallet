@@ -6,7 +6,6 @@ export const fields = [
 		type: "select",
 		isRequired: true,
 		error: "Select currency",
-		options: [],
 	},
 	{
 		id: "amount",
